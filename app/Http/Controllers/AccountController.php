@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\JobType;
+use App\Models\Job;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -192,7 +193,31 @@ session()->flash('success','You have registered successfully');
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->passes()) {
+            $job = new Job();
+            $job->title = $request->title;
+            $job->category_id = $request->category;
+            $job->job_type_id = $request->jobType;
+            $job->vacancy = $request->vacancy;
+            $job->salary = $request->salary;
+            $job->location = $request->location;
+            $job->description = $request->description;
+            $job->benefits = $request->benefits;
+            $job->responsibility = $request->responsibility;
+            $job->qualifications = $request->qualifications;
+            $job->keywords = $request->keywords;
+            $job->experience = $request->experience;
+            $job->company_name = $request->company_name;
+            $job->company_location = $request->company_location;
+            $job->company_website = $request->company_website;
+             
+            $job->save();
 
+            session()->flash('success', 'Job added successfully');
+
+            return response()->json([
+                'status' => true,
+                'errors' => []
+            ]);
         } else {
             return response()->json([
                 'status' => false,
@@ -200,4 +225,9 @@ session()->flash('success','You have registered successfully');
             ]);
         }
     }
+
+    public function myJobs() {
+        return view('front.account.job.my-jobs');
+    }
+
 }
