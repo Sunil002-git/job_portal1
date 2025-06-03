@@ -228,7 +228,7 @@ session()->flash('success','You have registered successfully');
     }
 
     public function myJobs() {
-        $jobs = Job::where('user_id', Auth::user()->id)->with('jobType')->paginate(10);
+        $jobs = Job::where('user_id', Auth::user()->id)->with('jobType')->orderBy('created_at', 'DESC')->paginate(10);
      return view('front.account.job.my-jobs', [
         'jobs' => $jobs
      ]);
@@ -299,6 +299,28 @@ public function updateJob(Request $request, $id) {
             'errors' => $validator->errors()
         ]);
     }
+}
+
+public function deleteJob(Request $request) {
+    $job = Job::where([
+        'user_id' => Auth::user()->id,
+        'id' => $request->jobId
+    ])->first();
+
+    if($job == null) {
+        session()->flash('error', 'Either job deleted or not found');
+        return response()->json([
+            'status' => true,
+            'errors' => []
+        ]);
+    }
+
+    Job::where('id', $request->jobId)->delete();
+    session()->flash('success', 'Job deleted Successfully.');
+    return response()->json([
+        'status' => true,
+        session()->flash('success', 'Job deleted Successfully.')
+    ]);
 }
 
 }
